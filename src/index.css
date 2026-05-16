@@ -53,6 +53,25 @@
   --spacing-gutter: 100px;
 }
 
+/* Low Performance Overrides */
+.low-perf {
+  scroll-behavior: auto !important;
+}
+
+.low-perf *,
+.low-perf *::before,
+.low-perf *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  animation-delay: 0ms !important;
+  transition-delay: 0ms !important;
+}
+
+.low-perf body::after {
+  display: none !important; /* Remove noise texture */
+}
+
 @media (max-width: 1024px) {
   :root {
     --spacing-margin-edge: 40px;

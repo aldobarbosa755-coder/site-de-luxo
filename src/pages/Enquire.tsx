@@ -1,33 +1,29 @@
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+import SectionHeader from "../components/SectionHeader";
+import { PAGE_TRANSITION, FADE_IN } from "../constants/animations";
 
 export default function Enquire() {
   const { t, language } = useLanguage();
 
-  const fadeIn = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
-  };
-
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      {...PAGE_TRANSITION}
       className="pt-40 pb-spacing-stack-lg bg-surface min-h-screen"
     >
       <div className="editorial-grid">
-        <motion.div {...fadeIn} className="col-start-1 col-end-13 md:col-start-4 md:col-end-10 text-center mb-24">
-          <span className="font-sans text-[11px] font-bold uppercase tracking-[0.7em] text-primary/40 mb-8 block">{t('enquire.label')}</span>
-          <h1 className="font-serif text-6xl md:text-8xl text-primary leading-tight">{t('enquire.title')}</h1>
-          <p className="font-sans text-lg text-on-surface-variant opacity-60 mt-12 mb-20 max-w-lg mx-auto">
-            {t('enquire.p')}
-          </p>
+        <motion.div {...FADE_IN} className="col-start-1 col-end-13 md:col-start-4 md:col-end-10 text-center mb-24">
+          <SectionHeader 
+            label={t('enquire.label')}
+            title={t('enquire.title')}
+            description={t('enquire.p')}
+            titleClassName="text-6xl md:text-8xl"
+            className="mb-0 md:mb-0"
+          />
         </motion.div>
 
-        <motion.div {...fadeIn} className="col-start-1 col-end-13 md:col-start-4 md:col-end-10 bg-white shadow-2xl p-12 md:p-20 border border-primary/5">
+        <motion.div {...FADE_IN} className="col-start-1 col-end-13 md:col-start-4 md:col-end-10 bg-white shadow-2xl p-12 md:p-20 border border-primary/5">
           <form className="space-y-16" onSubmit={(e) => e.preventDefault()}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                <div className="flex flex-col gap-4 items-center">
@@ -73,7 +69,7 @@ export default function Enquire() {
           </form>
         </motion.div>
 
-        <motion.div {...fadeIn} className="col-start-1 col-end-13 md:col-start-4 md:col-end-10 mt-24 text-center">
+        <motion.div {...FADE_IN} className="col-start-1 col-end-13 md:col-start-4 md:col-end-10 mt-24 text-center">
            <p className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] text-primary/30">
              {t('enquire.footer')}
            </p>

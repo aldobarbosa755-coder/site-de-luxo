@@ -3,7 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <title>Luxury | Arquitetura Contemporânea</title>
+    <script>
+      (function() {
+        var isLowPerf = false;
+        
+        // 1. Verificação de Conexão (Network Information API)
+        if (navigator.connection) {
+          var conn = navigator.connection;
+          if (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === '3g') {
+            isLowPerf = true;
+          }
+        }
+        
+        // 2. Verificação de Preferência do Usuário (Redução de Movimento)
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          isLowPerf = true;
+        }
+
+        // 3. Verificação básica de hardware (Opcional: núcleos de CPU fracos)
+        if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
+          // Dispositivos com 4 núcleos ou menos geralmente são mid-low end
+          // Mantemos opcional ou aplicamos se combinado com rede lenta
+        }
+
+        if (isLowPerf) {
+          document.documentElement.classList.add('low-perf');
+          // Dispara evento para integração com bibliotecas JS (Framer Motion, GSAP, etc)
+          window.dispatchEvent(new CustomEvent('lowPerformanceDetected', { detail: { lowPerf: true } }));
+          console.log('Performance Mode: Low Performance Detected. Animations disabled.');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

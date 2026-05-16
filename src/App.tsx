@@ -3,20 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion, AnimatePresence } from "motion/react";
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType } from "react-router-dom";
+import { motion, AnimatePresence, MotionConfig } from "motion/react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navbar, Footer } from "./components/Layout";
 import CustomCursor from "./components/CustomCursor";
+import PageTransition from "./components/PageTransition";
 import { LanguageProvider } from "./context/LanguageContext";
 import { ThemeProvider } from "./context/ThemeContext";
-import Home from "./pages/Home";
-import Heritage from "./pages/Heritage";
-import Collections from "./pages/Collections";
-import Enquire from "./pages/Enquire";
-import Concepcao from "./pages/Concepcao";
-import Selecao from "./pages/Selecao";
-import Execucao from "./pages/Execucao";
+
+const Home = lazy(() => import("./pages/Home"));
+const Heritage = lazy(() => import("./pages/Heritage"));
+const Collections = lazy(() => import("./pages/Collections"));
+const Enquire = lazy(() => import("./pages/Enquire"));
+const Concepcao = lazy(() => import("./pages/Concepcao"));
+const Selecao = lazy(() => import("./pages/Selecao"));
+const Execucao = lazy(() => import("./pages/Execucao"));
 
 function Preloader() {
   return (
@@ -47,105 +49,59 @@ function Preloader() {
   );
 }
 
-const scrollPositions = new Map<string, number>();
-
-function PageTransition({ children }: { children: React.ReactNode }) {
-  const location = useLocation();
-  const navigationType = useNavigationType();
-  
-  useEffect(() => {
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-  }, []);
-
-  // Use a ref to store the current key so we can save scroll on unmount/change
-  const locationKeyRef = React.useRef(location.key);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // Potentially throttle this if performance is an issue
-      scrollPositions.set(location.key, window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      scrollPositions.set(location.key, window.scrollY);
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [location.key]);
-
-  useEffect(() => {
-    if (navigationType === "PUSH") {
-      window.scrollTo(0, 0);
-    } else if (navigationType === "POP") {
-      const savedPos = scrollPositions.get(location.key);
-      if (typeof savedPos === "number") {
-        // We need to wait for the transition AND potential image loads
-        // A series of attempts is often necessary in heavy SPAs
-        const restore = () => window.scrollTo(0, savedPos);
-        
-        requestAnimationFrame(() => {
-          restore();
-          setTimeout(restore, 50);
-          setTimeout(restore, 200);
-          setTimeout(restore, 500);
-        });
-      }
-    }
-  }, [location.key, navigationType]);
-
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="min-h-screen flex flex-col"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
+    
+    const checkPerf = () => {
+      if (document.documentElement.classList.contains('low-perf')) {
+        setReducedMotion(true);
+      }
+    };
+
+    checkPerf();
+    window.addEventListener('lowPerformanceDetected', checkPerf);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('lowPerformanceDetected', checkPerf);
+    };
   }, []);
 
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <Router>
-        <CustomCursor />
-        <div className="min-h-screen bg-surface selection:bg-primary/5 selection:text-primary relative overflow-x-hidden">
-        <AnimatePresence>
-          {isLoading && <Preloader />}
-        </AnimatePresence>
+        <MotionConfig reducedMotion={reducedMotion ? "always" : "user"}>
+          <Router>
+            <CustomCursor />
+            <div className="min-h-screen bg-surface selection:bg-primary/5 selection:text-primary relative overflow-x-hidden">
+              <AnimatePresence>
+                {isLoading && <Preloader />}
+              </AnimatePresence>
 
-        {!isLoading && (
-          <>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<PageTransition><Home /><Footer /></PageTransition>} />
-              <Route path="/heritage" element={<PageTransition><Heritage /><Footer /></PageTransition>} />
-              <Route path="/collections" element={<PageTransition><Collections /><Footer /></PageTransition>} />
-              <Route path="/enquire" element={<PageTransition><Enquire /><Footer /></PageTransition>} />
-              <Route path="/concepcao" element={<PageTransition><Concepcao /><Footer /></PageTransition>} />
-              <Route path="/selecao" element={<PageTransition><Selecao /><Footer /></PageTransition>} />
-              <Route path="/execucao" element={<PageTransition><Execucao /><Footer /></PageTransition>} />
-            </Routes>
-          </>
-        )}
-      </div>
-    </Router>
-    </LanguageProvider>
+              {!isLoading && (
+                <>
+                  <Navbar />
+                  <Suspense fallback={null}>
+                    <Routes>
+                      <Route path="/" element={<PageTransition><Home /><Footer /></PageTransition>} />
+                      <Route path="/heritage" element={<PageTransition><Heritage /><Footer /></PageTransition>} />
+                      <Route path="/collections" element={<PageTransition><Collections /><Footer /></PageTransition>} />
+                      <Route path="/enquire" element={<PageTransition><Enquire /><Footer /></PageTransition>} />
+                      <Route path="/concepcao" element={<PageTransition><Concepcao /><Footer /></PageTransition>} />
+                      <Route path="/selecao" element={<PageTransition><Selecao /><Footer /></PageTransition>} />
+                      <Route path="/execucao" element={<PageTransition><Execucao /><Footer /></PageTransition>} />
+                    </Routes>
+                  </Suspense>
+                </>
+              )}
+            </div>
+          </Router>
+        </MotionConfig>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

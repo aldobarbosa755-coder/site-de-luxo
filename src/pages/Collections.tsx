@@ -1,19 +1,16 @@
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import { useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import ImageReveal from "../components/ImageReveal";
 import TextReveal from "../components/TextReveal";
+import SectionHeader from "../components/SectionHeader";
+import { PAGE_TRANSITION } from "../constants/animations";
 
 export default function Collections() {
   const { t } = useLanguage();
-  const fadeIn = {
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-100px" },
-    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
-  };
 
-  const collections = [
+  const collections = useMemo(() => [
     { 
       name: t('col.item1.name'), 
       desc: t('col.item1.desc'), 
@@ -29,30 +26,21 @@ export default function Collections() {
       desc: t('col.item3.desc'), 
       img: "https://images.unsplash.com/photo-1540674199941-b82c638d77e3?q=80&w=2574&auto=format&fit=crop" 
     }
-  ];
+  ], [t]);
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      {...PAGE_TRANSITION}
       className="pt-40 pb-spacing-stack-lg bg-surface"
     >
       <div className="editorial-grid">
-        <div className="col-start-1 col-end-13 mb-32 flex flex-col justify-between items-center text-center gap-12">
-          <div>
-            <TextReveal>
-            <span className="font-sans text-[11px] font-bold uppercase tracking-[0.7em] text-primary/40 mb-8 block">{t('nav.collections')}</span>
-            </TextReveal>
-            <TextReveal delay={0.2}>
-              <h1 className="font-serif text-6xl md:text-9xl text-primary">{t('col.title')}</h1>
-            </TextReveal>
-          </div>
-          <TextReveal delay={0.4}>
-            <p className="font-sans text-lg text-on-surface-variant opacity-60 max-w-sm mx-auto md:mx-0">
-              {t('col.p')}
-            </p>
-          </TextReveal>
+        <div className="col-start-1 col-end-13">
+          <SectionHeader 
+            label={t('nav.collections')}
+            title={t('col.title')}
+            description={t('col.p')}
+            titleClassName="text-6xl md:text-9xl"
+          />
         </div>
 
         <div className="col-start-1 col-end-13 space-y-40">
@@ -63,7 +51,15 @@ export default function Collections() {
             >
               <div className="w-full md:w-1/2 aspect-[16/10] bg-surface-container group cursor-pointer">
                 <ImageReveal className="w-full h-full">
-                  <img src={col.img} className="w-full h-full object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-105" alt={col.name} />
+                  <img 
+                    src={col.img} 
+                    className="w-full h-full object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-105" 
+                    alt={col.name} 
+                    width={1000}
+                    height={625}
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </ImageReveal>
               </div>
               <div className="w-full md:w-1/2 flex flex-col items-center text-center gap-12">

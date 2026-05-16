@@ -2,28 +2,25 @@ import { motion } from "motion/react";
 import { useLanguage } from "../context/LanguageContext";
 import ImageReveal from "../components/ImageReveal";
 import TextReveal from "../components/TextReveal";
+import SectionHeader from "../components/SectionHeader";
+import { PAGE_TRANSITION } from "../constants/animations";
 
 export default function Execucao() {
   const { t, language } = useLanguage();
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      {...PAGE_TRANSITION}
       className="pt-40 pb-spacing-stack-lg bg-surface"
     >
       <div className="editorial-grid">
-        <div className="col-start-2 col-end-12 md:col-start-3 md:col-end-11 text-center mb-32">
-          <TextReveal>
-            <span className="font-sans text-[11px] font-bold uppercase tracking-[0.7em] text-primary/40 mb-8 block">{t('process.03.title')}</span>
-          </TextReveal>
-          <TextReveal delay={0.2}>
-            <h1 className="font-serif text-6xl md:text-8xl text-primary mb-12 italic leading-tight">
-              {language === 'PT' ? 'O Ritual do Tempo' : 'The Ritual of Time'}
-            </h1>
-          </TextReveal>
-          <TextReveal delay={0.4} className="w-20 h-[1px] bg-primary/20 mx-auto" />
+        <div className="col-start-1 col-end-13">
+          <SectionHeader 
+            label={t('process.03.title')}
+            title={language === 'PT' ? 'O Ritual do Tempo' : 'The Ritual of Time'}
+            titleClassName="text-6xl md:text-8xl italic"
+          />
+          <TextReveal delay={0.4} className="w-20 h-[1px] bg-primary/20 mx-auto -mt-12 md:-mt-20 mb-32" />
         </div>
 
         <div className="col-start-1 col-end-13 md:col-start-2 md:col-end-7 mb-24 md:mb-0">
@@ -32,6 +29,10 @@ export default function Execucao() {
               className="w-full h-full object-cover grayscale brightness-90" 
               src="https://images.unsplash.com/photo-1541960714498-8ec8891000f0?q=80&w=2670&auto=format&fit=crop" 
               alt="Artisanal Tool" 
+              width={800}
+              height={1067}
+              loading="lazy"
+              decoding="async"
             />
           </ImageReveal>
         </div>

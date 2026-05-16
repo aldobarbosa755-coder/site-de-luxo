@@ -1,34 +1,26 @@
 import { motion } from "motion/react";
-import { ArrowRight } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import ImageReveal from "../components/ImageReveal";
 import TextReveal from "../components/TextReveal";
+import SectionHeader from "../components/SectionHeader";
+import { PAGE_TRANSITION, FADE_IN } from "../constants/animations";
 
 export default function Heritage() {
   const { t, language } = useLanguage();
-  const fadeIn = {
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-100px" },
-    transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
-  };
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      {...PAGE_TRANSITION}
       className="pt-40 pb-spacing-stack-lg bg-surface"
     >
       <div className="editorial-grid">
-        <div className="col-start-2 col-end-12 md:col-start-3 md:col-end-11 text-center mb-32">
-          <TextReveal>
-            <span className="font-sans text-[11px] font-bold uppercase tracking-[0.7em] text-primary/40 mb-8 block">{t('heritage.label')}</span>
-          </TextReveal>
-          <TextReveal delay={0.2}>
-            <h1 className="font-serif text-6xl md:text-8xl text-primary mb-12 italic leading-tight">{t('heritage.title')}</h1>
-          </TextReveal>
-          <TextReveal delay={0.4} className="w-20 h-[1px] bg-primary/20 mx-auto" />
+        <div className="col-start-1 col-end-13">
+          <SectionHeader 
+            label={t('heritage.label')}
+            title={t('heritage.title')}
+            titleClassName="text-6xl md:text-8xl italic"
+          />
+          <TextReveal delay={0.4} className="w-20 h-[1px] bg-primary/20 mx-auto -mt-12 md:-mt-20 mb-32" />
         </div>
 
         <div className="col-start-1 col-end-13 md:col-start-2 md:col-end-7 mb-24 md:mb-0">
@@ -37,6 +29,10 @@ export default function Heritage() {
               className="w-full h-full object-cover grayscale brightness-95" 
               src="https://images.unsplash.com/photo-1540674199941-b82c638d77e3?q=80&w=2574&auto=format&fit=crop" 
               alt="Ancestry" 
+              width={800}
+              height={1067}
+              loading="lazy"
+              decoding="async"
             />
           </ImageReveal>
         </div>
